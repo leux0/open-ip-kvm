@@ -105,7 +105,7 @@ SSH to linux SBC with your pc.
 * Install Node.js 14.x+
   * [Install NodeJS on Armbian](https://www.autoptr.top/htmls/i12bretro/0507)
 * Clone repo and install its dependency
-  * `git clone https://github.com/Nihiue/open-ip-kvm.git`
+  * `git clone https://github.com/ElluIFX/open-ip-kvm.git`
   * `cd open-ip-kvm && npm install`
 </details>
 
