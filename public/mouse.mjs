@@ -1,83 +1,59 @@
-
-const MOUSE_EVT_START = 249;
-const EVT_END = 251;
-
-const MOUSE_EVT_TYPE_MOVE = 1;
-const MOUSE_EVT_TYPE_LEFT_DOWN = 2;
-const MOUSE_EVT_TYPE_LEFT_UP = 3;
-const MOUSE_EVT_TYPE_MIDDLE_DOWN  = 4;
-const MOUSE_EVT_TYPE_MIDDLE_UP = 5;
-const MOUSE_EVT_TYPE_RIGHT_DOWN = 6;
-const MOUSE_EVT_TYPE_RIGHT_UP = 7;
-const MOUSE_EVT_TYPE_WHEEL = 8;
-const MOUSE_EVT_TYPE_RESET = 9;
-const MOUSE_EVT_TYPE_CONFIG_MOVE_FACTOR = 10;
-
-function sMove(n) {
-  if (n < -120) {
-    return 0;
-  }
-  if (n > 120) {
-    return 240;
-  }
-  return n + 120;
-}
-
 export function sendEvent(channel, data, type) {
-
-  let payload = new Array(5);
+  let payload = new Array(2);
+  console.debug('sendEvent mouse', channel, data, type);
   payload.fill(0);
-
-  payload[0] = MOUSE_EVT_START;
-
   if (type === 'move') {
-    payload[1] = MOUSE_EVT_TYPE_MOVE;
-    payload[2] = sMove(Math.round(data[0] / 1.5));
-    payload[3] = sMove(Math.round(data[1] / 1.5));
-  } else if (type === 'config-move-factor') {
-    payload[1] = MOUSE_EVT_TYPE_CONFIG_MOVE_FACTOR;
-    payload[2] = data;
-  } else if (type === 'mousedown') {
+    var type_msg = 'write_mouse_offset'
+    payload[0] = data[0] * 15;
+    payload[1] = data[1] * 15;
+  } else if (type === 'abs') {
+    var type_msg = 'write_mouse_pos'
+    payload[0] = data[0];
+    payload[1] = data[1];
+  }else if (type === 'mousedown') {
+    var type_msg = 'write_mouse_button'
+    payload[1] = 2;
     switch (data) {
       case 0:
-        payload[1] = MOUSE_EVT_TYPE_LEFT_DOWN;
+        payload[0] = 1;
         break;
       case 1:
-        payload[1] = MOUSE_EVT_TYPE_MIDDLE_DOWN;
+        payload[0] = 4;
         break;
       case 2:
-        payload[1] = MOUSE_EVT_TYPE_RIGHT_DOWN;
+        payload[0] = 2;
         break;
       default:
         return;
     }
   } else if (type === 'mouseup') {
+    var type_msg = 'write_mouse_button'
+    payload[1] = 3;
     switch (data) {
       case 0:
-        payload[1] = MOUSE_EVT_TYPE_LEFT_UP;
+        payload[0] = 1;
         break;
       case 1:
-        payload[1] = MOUSE_EVT_TYPE_MIDDLE_UP;
+        payload[0] = 4;
         break;
       case 2:
-        payload[1] = MOUSE_EVT_TYPE_RIGHT_UP;
+        payload[0] = 2;
         break;
       default:
         return;
     }
   } else if(type === 'wheel') {
-    payload[1] = MOUSE_EVT_TYPE_WHEEL;
-    payload[2] = sMove(Math.round(data / 40));
+    var type_msg = 'write_mouse_wheel'
+    payload[0] = Math.round(data / 40);
   } else if(type === 'reset') {
-    payload[1] = MOUSE_EVT_TYPE_RESET;
+    var type_msg = 'write_mouse_button'
+    payload[1] = 1;
   } else {
     return;
   }
 
-  payload[4] = EVT_END;
-
-  const msg = {
-    type: 'write_serial',
+  var msg = {
+    type: type_msg,
     payload,
   };
 

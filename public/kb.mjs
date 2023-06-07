@@ -1,42 +1,80 @@
 
-const KB_EVT_START = 248;
-const KEY_SEQUENCE_EVT_START = 250;
-const EVT_END = 251;
-
 const KB_EVT_TYPE_KEYDOWN = 1;
 const KB_EVT_TYPE_KEYUP = 2;
 const KB_EVT_TYPE_RESET = 3;
 
-// https://www.arduino.cc/reference/en/language/functions/usb/keyboard/keyboardmodifiers/
- const keyRemap = {
-  Control: 0x80,
-  Shift: 0x81,
-  Alt: 0x82,
-  Meta: 0x83,
-  Tab: 0xB3,
-  CapsLock: 0xC1,
-  Backspace: 0xB2,
-  Enter: 0xB0,
-  ContextMenu: 0xED,
-  Insert: 0xD1,
-  Delete: 0xD4,
-  Home: 0xD2,
-  End: 0xD5,
-  PageUp: 0xD3,
-  PageDown: 0xD6,
-  ArrowUp: 0xDA,
-  ArrowDown: 0xD9,
-  ArrowLeft: 0xD8,
-  ArrowRight: 0xD7,
-  PrintScreen: 0xCE,
-  ScrollLock: 0xCF,
-  Pause: 0xD0,
-  Escape: 0xB1
+const keyRemap = {
+  Control: 0XE0,
+  Shift: 0XE1,
+  Alt: 0XE2,
+  Meta: 0XE3,
+  Tab: 0X2B,
+  CapsLock: 0X39,
+  Backspace: 0X2A,
+  Enter: 0X28,
+  ContextMenu: 0X76,
+  Insert: 0X49,
+  Delete: 0X4C,
+  Home: 0X4A,
+  End: 0X4D,
+  PageUp: 0X4B,
+  PageDown: 0X4E,
+  ArrowUp: 0X52,
+  ArrowDown: 0X51,
+  ArrowLeft: 0X50,
+  ArrowRight: 0X4F,
+  PrintScreen: 0X46,
+  ScrollLock: 0X47,
+  Pause: 0X48,
+  Escape: 0X29,
+  "`": 0X35,
+  ";": 0X33,
+  "'": 0X34,
+  "~": 0X35,
+  ":": 0X33,
+  '"': 0X34,
+  "[": 0X2F,
+  "]": 0X30,
+  "\\": 0X31,
+  "{": 0X2F,
+  "}": 0X30,
+  "|": 0X31,
+  "-": 0X2D,
+  "_": 0X2D,
+  "=": 0X2E,
+  "+": 0X2E,
+  "1": 0X1E,
+  "2": 0X1F,
+  "3": 0X20,
+  "4": 0X21,
+  "5": 0X22,
+  "6": 0X23,
+  "7": 0X24,
+  "8": 0X25,
+  "9": 0X26,
+  "0": 0X27,
+  ")": 0X27,
+  "!": 0X1E,
+  "@": 0X1F,
+  "#": 0X20,
+  "$": 0X21,
+  "%": 0X22,
+  "^": 0X23,
+  "&": 0X24,
+  "*": 0X25,
+  "(": 0X26,
 };
-
 for (let i = 0; i < 12; i += 1) {
-  keyRemap[`F${1 + i}`] = 0xC2 + i;
+  keyRemap[`F${1 + i}`] = 0X3A + i;
 }
+for (let i = 0; i < 26; i += 1) {
+  keyRemap[String.fromCharCode(97 + i)] = 0X04 + i;
+}
+for (let i = 0; i < 26; i += 1) {
+  keyRemap[String.fromCharCode(65 + i)] = 0X04 + i;
+}
+
+console.debug('keyRemap', keyRemap);
 
 function isChar(key) {
   if (!key || key.length > 1) {
@@ -47,18 +85,11 @@ function isChar(key) {
 }
 
 export function sendEvent(channel, key, type) {
-
-  // Keyboard event has fixed length of 4 bytes
-
-  // Byte 0: Start Flag - KB_EVT_START
-  // Byte 1: Data - Event Param - KB_EVT_TYPE_KEYDOWN | KB_EVT_TYPE_KEYUP | KB_EVT_TYPE_RESET
-  // Byte 2: Data - Event Payload - [KeyCode to Press]
-  // Byte 3: End Flag - EVT_END
-
-  let payload = new Array(4);
+  // Byte 0: key  - [KeyCode to Press]
+  // Byte 1: State  - KB_EVT_TYPE_KEYDOWN | KB_EVT_TYPE_KEYUP | KB_EVT_TYPE_RESET
+  let payload = new Array(2);
   payload.fill(0);
-
-  payload[0] = KB_EVT_START;
+  console.debug('sendEvent', key, type);
 
   if (type === 'keydown') {
     payload[1] = KB_EVT_TYPE_KEYDOWN;
@@ -69,35 +100,21 @@ export function sendEvent(channel, key, type) {
   } else {
     return;
   }
-
-  if (type === 'reset') {
-    payload[2] = 0;
-  } else if (isChar(key)) {
-    payload[2] = key.codePointAt(0);
-  } else if (keyRemap[key]) {
-    payload[2] = keyRemap[key];
-  } else {
-    return;
+  if (type !== 'reset') {
+    if (keyRemap[key]) {
+      payload[0] = keyRemap[key];
+    } else {
+      console.warn('Unknown key', key);
+      return;
+    }
+    console.debug('got payload', payload);
   }
 
-  payload[3] = EVT_END;
-
   const msg = {
-    type: 'write_serial',
+    type: 'write_keyboard',
     payload,
   };
-
-  // console.log(type, key, payload[2]);
   channel.send(JSON.stringify(msg));
-}
-
-function sendSeqBuf(buf, channel) {
-  buf.unshift(KEY_SEQUENCE_EVT_START);
-  buf.push(EVT_END);
-  channel.send(JSON.stringify({
-    type: 'write_serial',
-    payload: buf
-  }));
 }
 
 function sleep(ms = 100) {
@@ -107,26 +124,12 @@ function sleep(ms = 100) {
 }
 
 export async function sendSequence(channel, str) {
-  if (str.length > 8192) {
-    return alert('sequence is too long')
-  }
-
-  let buf = [];
-
   for (let i = 0; i < str.length; i += 1) {
-    if (isChar(str[i]) || str[i] === '\n') {
-      buf.push(str.codePointAt(i));
-    }
-
-    if (buf.length >= 30) {
-      sendSeqBuf(buf, channel);
-      buf = [];
-      await sleep(200);
-    }
+    sendEvent(channel, str[i], 'keydown');
+    await sleep(15);
+    sendEvent(channel, str[i], 'keyup');
+    await sleep(15);
   }
 
-  if (buf.length) {
-    sendSeqBuf(buf, channel);
-  }
 
 }

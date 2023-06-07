@@ -1,3 +1,13 @@
+# About this fork
+This repo is modified from [Nihiue/open-ip-kvm](https://github.com/Nihiue/open-ip-kvm) to adopt to [Jackadminx/KVM-Card-Mini](https://github.com/Jackadminx/KVM-Card-Mini) hardware HID protocol.
+
+
+All serial and arduino code are removed, use [Node-HID](https://github.com/node-hid/node-hid) to communicate with KVM-Card-Mini, so **it's not compatible with original arduino hardware**.
+
+I know that my front-end code is so suck, just for fun.
+
+**Node-HID requires root permission to run**
+
 # Open IP-KVM
 
 This project provides an open-source IP-KVM solution.
@@ -59,7 +69,7 @@ The unit plugs into the Keyboard, Video and Mouse ports of a computer or server 
 
 ## Deploy and Run
 
-### 1. Prepare Arduino Leonardo
+### ~~1. Prepare Arduino Leonardo~~ (see note on top)
 
 <details>
 
@@ -105,10 +115,12 @@ SSH to linux SBC with your pc.
 
 * Connect IO
   * HDMI-USB capture device via USB
-  * Arduino Leonardo via native serial port or USB-TTL adapter
+  * ~~Arduino Leonardo via native serial port or USB-TTL adapter~~
+  * Connect Mini-KVM-Card to SBC via USB
 * Edit `open-ip-kvm/server/config.json`
   * `mjpg_streamer.device`: path of HDMI-USB capture device
-  * `serialport`: path of serial port
+  * ~~`serialport`: path of serial port~~
+  * HID specification code already configured, no need to change
 
 </details>
 
@@ -139,4 +151,3 @@ MIT
 [mjpg_streamer](https://github.com/jacksonliam/mjpg-streamer)
 
 For production environment, use [Pi-KVM](https://pikvm.org/)
-

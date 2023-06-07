@@ -10,23 +10,49 @@ const ws = require('ws');
 const Koa = require('koa');
 const KoaStaic = require('koa-static');
 
-const { startSerial } = require('./serial.js');
 const { startMJPGStreamer } = require('./mjpg-streamer.js');
+const { HIDController } = require('./hid.js');
 
 
 async function start() {
 
   try {
-    const writeSerial = startSerial(config.serialport);
+    var hid = new HIDController()
     await startMJPGStreamer(config.mjpg_streamer);
-
     function websocketHandler(ws) {
       console.log('new websocket connection');
       ws.on('message', function message(data) {
         const msg = JSON.parse(data.toString());
         switch (msg.type) {
-          case 'write_serial':
-            writeSerial(msg.payload);
+          case 'write_WS2812':
+            var r = msg.payload[0];
+            var g = msg.payload[1];
+            var b = msg.payload[2];
+            hid.WriteWS2812(r, g, b);
+            break;
+          case 'write_keyboard':
+            var key = msg.payload[0];
+            var state = msg.payload[1];
+            hid.WriteKeyboard(key, state);
+            break;
+          case 'write_mouse_pos':
+            var x = msg.payload[0];
+            var y = msg.payload[1];
+            hid.WriteMousePos(x, y);
+            break;
+          case 'write_mouse_button':
+            var button = msg.payload[0];
+            var state = msg.payload[1];
+            hid.WriteMouseButtons(button, state);
+            break;
+          case 'write_mouse_wheel':
+            var wheel = msg.payload[0];
+            hid.WriteMouseWheel(wheel);
+            break;
+          case 'write_mouse_offset':
+            var x = msg.payload[0];
+            var y = msg.payload[1];
+            hid.WriteMouseOffset(x, y);
             break;
         }
       });
@@ -64,7 +90,7 @@ async function start() {
     });
 
     wsInstance.on('connection', websocketHandler);
-  } catch(e) {
+  } catch (e) {
     console.log(e);
     process.exit(1);
   }
@@ -72,4 +98,3 @@ async function start() {
 }
 
 start();
-

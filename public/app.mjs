@@ -12,8 +12,12 @@ new Vue({
     isKeyCaptureActive: false,
     isPointorLocked: false,
     mouseMoveSlice: [0, 0],
+    mouseAbsPos: [0, 0],
+    mouseAbsChanged: false,
     activeDialog: '',
     pasteContent: '',
+    screenWidth: 0,
+    screenHeight: 0,
   },
   mounted() {
     this.init();
@@ -37,6 +41,9 @@ new Vue({
         this.bindMouseHandler();
 
         this.streamSrc = `http://${this.serviceHost}:${config.mjpg_streamer.stream_port}/?action=stream`;
+        const res = config.mjpg_streamer.res // string like '1280x720'
+        this.screenWidth = parseInt(res.split('x')[0])
+        this.screenHeight = parseInt(res.split('x')[1])
       } catch (e) {
         alert(e.toString());
       }
@@ -89,6 +96,7 @@ new Vue({
     bindMouseHandler() {
       const mouseMoveSlice = this.mouseMoveSlice;
 
+
       document.addEventListener('pointerlockchange', (evt) => {
         this.isPointorLocked =
           document.pointerLockElement &&
@@ -102,7 +110,11 @@ new Vue({
           mouseMoveSlice[0] = 0;
           mouseMoveSlice[1] = 0;
         }
-      }, 30);
+        if (this.mouseAbsChanged) {
+          mouse.sendEvent(this.$channel, this.mouseAbsPos, 'abs');
+          this.mouseAbsChanged = false;
+        }
+      }, 60);
 
       mouse.sendEvent(this.$channel, 1, 'config-move-factor');
     },
@@ -128,13 +140,64 @@ new Vue({
         try {
           this.setDialog();
           screen.requestPointerLock();
-        } catch (e) {}
+        } catch (e) { }
       } else {
         document.exitPointerLock();
       }
     },
     onScreenMouseMove(evt) {
+      // get absolute position
+      this.mouseAbsPos[0] = evt.clientX;
+      this.mouseAbsPos[1] = evt.clientY;
+      // get window size
+      const winWidth = window.innerWidth;
+      const winHeight = window.innerHeight;
+      // screen ratio is according to config
+      // so we need to convert mouse position to screen ratio
+      // remove black border
+      // notice: screen is in the top of window
+      const screenRatio = this.screenWidth / this.screenHeight;
+      const winRatio = winWidth / winHeight;
+      // calc Y
+      if (winHeight > this.screenHeight) {
+        // black border on bottom
+        this.mouseAbsPos[1] = Math.floor(this.mouseAbsPos[1] / this.screenHeight * 0x7fff)
+        if (this.mouseAbsPos[1] > 0x7fff) {
+          this.mouseAbsPos[1] = 0x7fff
+        }
+      } else if (winRatio < screenRatio) {
+        // black border on bottom
+        const blackHeight = winHeight - winWidth / screenRatio
+        if (this.mouseAbsPos[1] > winHeight - blackHeight) {
+          this.mouseAbsPos[1] = winHeight - blackHeight
+        }
+        this.mouseAbsPos[1] = Math.floor((this.mouseAbsPos[1]) / (winHeight - blackHeight) * 0x7fff)
+      } else {
+        this.mouseAbsPos[1] = Math.floor((this.mouseAbsPos[1]) / (winHeight) * 0x7fff)
+      }
+      // calc X
+      if (winRatio > screenRatio) {
+        var blackWidth = 0
+        if (winHeight > this.screenHeight) {
+           blackWidth = winWidth - this.screenHeight * screenRatio
+        }
+        else {
+           blackWidth = winWidth - winHeight * screenRatio
+        }
+        this.mouseAbsPos[0] -= blackWidth / 2
+        if (this.mouseAbsPos[0] < 0) {
+          this.mouseAbsPos[0] = 0
+        }
+        this.mouseAbsPos[0] = Math.floor((this.mouseAbsPos[0]) / (winWidth - blackWidth) * 0x7fff)
+        if (this.mouseAbsPos[0] > 0x7fff) {
+          this.mouseAbsPos[0] = 0x7fff
+        }
+      } else {
+        this.mouseAbsPos[0] = Math.floor((this.mouseAbsPos[0]) / (winWidth) * 0x7fff)
+      }
+
       if (!this.isPointorLocked) {
+        this.mouseAbsChanged = true;
         return;
       }
       this.mouseMoveSlice[0] += evt.movementX;

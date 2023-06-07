@@ -7,7 +7,7 @@ function writeSerial(numArr) {
   serialport.write(buf);
 }
 
-module.exports.startSerial = function(portPath) {
+module.exports.startSerial = function (portPath) {
   if (serialport) {
     return;
   }
