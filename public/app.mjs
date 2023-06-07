@@ -217,12 +217,14 @@ new Vue({
       // if (!this.isPointorLocked) {
       //   return;
       // }
+      evt.preventDefault();
       mouse.sendEvent(this.$channel, evt.button, 'mouseup');
     },
     onScreenMouseWheel(evt) {
       // if (!this.isPointorLocked) {
       //   return;
       // }
+      evt.preventDefault();
       mouse.sendEvent(this.$channel, evt.wheelDeltaY, 'wheel');
     },
     doRemotePaste() {
