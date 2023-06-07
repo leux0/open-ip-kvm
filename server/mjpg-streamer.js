@@ -11,7 +11,7 @@ function startMJPGStreamer(opt) {
     const cmd = [
       'mjpg_streamer',
       '-i',
-      `'input_uvc.so -d ${opt.device} -r ${opt.res} -f ${opt.fps} -n'`,
+      `'input_uvc.so -d ${opt.device} -r ${opt.res} -f ${opt.fps} -n -q 40'`,
       '-o',
       `'output_http.so -p ${opt.stream_port} -n'`,
     ].join(' ');

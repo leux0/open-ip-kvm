@@ -83,7 +83,7 @@ for (let i = 0; i < 26; i += 1) {
   keyRemap[String.fromCharCode(65 + i)] = 0X04 + i;
 }
 
-console.debug('keyRemap', keyRemap);
+// console.debug('keyRemap', keyRemap);
 
 export function sendEvent(channel, key, type) {
   // Byte 0: key  - [KeyCode to Press]
@@ -107,7 +107,7 @@ export function sendEvent(channel, key, type) {
       console.warn('Unknown key', key);
       return;
     }
-    console.debug('got payload', payload);
+    // console.debug('got payload', payload);
   }
 
   const msg = {
@@ -115,7 +115,7 @@ export function sendEvent(channel, key, type) {
     payload,
   };
   channel.send(JSON.stringify(msg));
-  console.debug('sendEvent', key, type);
+  // console.debug('sendEvent', key, type);
 }
 
 function sleep(ms = 100) {

@@ -16,6 +16,11 @@
   </head>
 
   <body>
+    <script>
+      document.addEventListener('contextmenu',function(e){
+        e.preventDefault();
+      })
+    </script>
     <div id="app">
       <div v-show="streamSrc" style="display: none">
 
@@ -34,12 +39,12 @@
 
         <div class="float-zone trans-bg">
           <!-- <div>Open IP-KVM</div> -->
-          <span
+          <!-- <span
             class="indicator bi-mouse"
             style="font-size: 22px"
             :class="{active: isPointorLocked}"
             title="Mouse Indicator"
-          ></span>
+          ></span> -->
           <span
             class="indicator bi-keyboard"
             style="font-size: 26px"
@@ -64,8 +69,7 @@
             <li>
               Mouse
               <ul>
-                <li>Click anywhere to enter pointer capture mode</li>
-                <li>Press <b>ESC</b> to exit</li>
+                <li>Click anywhere to use mouse</li>
               </ul>
             </li>
             <li>

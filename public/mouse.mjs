@@ -57,5 +57,5 @@ export function sendEvent(channel, data, type) {
   };
 
   channel.send(JSON.stringify(msg));
-  console.debug('sendEvent mouse', channel, data, type);
+  // console.debug('sendEvent mouse', channel, data, type);
 }

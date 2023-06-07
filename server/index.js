@@ -10,8 +10,8 @@ const ws = require('ws');
 const Koa = require('koa');
 const KoaStaic = require('koa-static');
 
-const { startMJPGStreamer } = require('./mjpg-streamer.js');
 const { HIDController } = require('./hid.js');
+const { startMJPGStreamer } = require('./mjpg-streamer.js');
 
 
 async function start() {

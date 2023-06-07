@@ -204,25 +204,25 @@ new Vue({
       this.mouseMoveSlice[1] += evt.movementY;
     },
     onScreenMouseDown(evt) {
-      if (!this.isPointorLocked) {
-        if (evt.button === 0) {
-          this.setPointerLock(true);
-        }
-        return;
-      }
+      // if (!this.isPointorLocked) {
+      //   if (evt.button === 0) {
+      //     this.setPointerLock(true);
+      //   }
+      //   return;
+      // }
       evt.preventDefault();
       mouse.sendEvent(this.$channel, evt.button, 'mousedown');
     },
     onScreenMouseUp(evt) {
-      if (!this.isPointorLocked) {
-        return;
-      }
+      // if (!this.isPointorLocked) {
+      //   return;
+      // }
       mouse.sendEvent(this.$channel, evt.button, 'mouseup');
     },
     onScreenMouseWheel(evt) {
-      if (!this.isPointorLocked) {
-        return;
-      }
+      // if (!this.isPointorLocked) {
+      //   return;
+      // }
       mouse.sendEvent(this.$channel, evt.wheelDeltaY, 'wheel');
     },
     doRemotePaste() {
