@@ -27,6 +27,9 @@ const keyRemap = {
   ScrollLock: 0X47,
   Pause: 0X48,
   Escape: 0X29,
+  " ": 0X2C,
+  Space: 0X2C,
+  "\t": 0X2B,
   "`": 0X35,
   ";": 0X33,
   "'": 0X34,
@@ -64,6 +67,12 @@ const keyRemap = {
   "*": 0X25,
   "(": 0X26,
 };
+const ShiftSymbols = [
+  ")", "!", "@", "#", "$", "%",
+  "^", "&", "*", "(", "~", "_",
+  "+", "{", "}", "|", ":", '"',
+  "<", ">", "?",
+]
 for (let i = 0; i < 12; i += 1) {
   keyRemap[`F${1 + i}`] = 0X3A + i;
 }
@@ -76,20 +85,11 @@ for (let i = 0; i < 26; i += 1) {
 
 console.debug('keyRemap', keyRemap);
 
-function isChar(key) {
-  if (!key || key.length > 1) {
-    return false;
-  }
-  const keyAscii = key.codePointAt(0);
-  return keyAscii >= 32 && keyAscii <= 126;
-}
-
 export function sendEvent(channel, key, type) {
   // Byte 0: key  - [KeyCode to Press]
   // Byte 1: State  - KB_EVT_TYPE_KEYDOWN | KB_EVT_TYPE_KEYUP | KB_EVT_TYPE_RESET
   let payload = new Array(2);
   payload.fill(0);
-  console.debug('sendEvent', key, type);
 
   if (type === 'keydown') {
     payload[1] = KB_EVT_TYPE_KEYDOWN;
@@ -115,6 +115,7 @@ export function sendEvent(channel, key, type) {
     payload,
   };
   channel.send(JSON.stringify(msg));
+  console.debug('sendEvent', key, type);
 }
 
 function sleep(ms = 100) {
@@ -125,11 +126,25 @@ function sleep(ms = 100) {
 
 export async function sendSequence(channel, str) {
   for (let i = 0; i < str.length; i += 1) {
+    var isShift = false;
+    if (str[i] === str[i].toUpperCase()) {
+      isShift = true;
+    }
+    if (ShiftSymbols.indexOf(str[i]) !== -1) {
+      isShift = true;
+    }
+    if (isShift) {
+      sendEvent(channel, 'Shift', 'keydown');
+      await sleep(5);
+    }
     sendEvent(channel, str[i], 'keydown');
     await sleep(15);
     sendEvent(channel, str[i], 'keyup');
+    if (isShift) {
+      sendEvent(channel, 'Shift', 'keyup');
+      await sleep(5);
+    }
     await sleep(15);
   }
-
 
 }

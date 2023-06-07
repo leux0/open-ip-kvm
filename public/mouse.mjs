@@ -1,6 +1,5 @@
 export function sendEvent(channel, data, type) {
   let payload = new Array(2);
-  console.debug('sendEvent mouse', channel, data, type);
   payload.fill(0);
   if (type === 'move') {
     var type_msg = 'write_mouse_offset'
@@ -58,4 +57,5 @@ export function sendEvent(channel, data, type) {
   };
 
   channel.send(JSON.stringify(msg));
+  console.debug('sendEvent mouse', channel, data, type);
 }
