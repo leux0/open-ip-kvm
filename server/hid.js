@@ -47,15 +47,8 @@ class HIDController {
 
     WriteHID(data) {
         // add 0x00 to the beginning of the data
-        try {
-            // console.debug("Write data: ", data);
-            this.device.write([0x00].concat(data));
-        } catch (e) {
-            console.log("Error writing to device: ", e);
-            console.log("Attempting to reopen device...");
-            this.device = new HID.HID(VENDOR_ID, PRODUCT_ID);
-            console.log("Opened device: ", VENDOR_ID, PRODUCT_ID)
-        }
+        // console.debug("Write data: ", data);
+        this.device.write([0x00].concat(data));
     }
 
     WriteWS2812(r, g, b) {
@@ -88,7 +81,7 @@ class HIDController {
                         }
                     }
                     if (i == 10) {
-                        console.error("Error: keyboard buffer full");
+                        console.warn("warn: keyboard buffer full");
                         return;
                     }
                 }
@@ -100,7 +93,7 @@ class HIDController {
                         }
                     }
                     if (i == 10) {
-                        console.error("Error: key not found in buffer");
+                        console.warn("warn: key not found in buffer");
                         return;
                     }
                 }

@@ -179,10 +179,10 @@ new Vue({
       if (winRatio > screenRatio) {
         var blackWidth = 0
         if (winHeight > this.screenHeight) {
-           blackWidth = winWidth - this.screenHeight * screenRatio
+          blackWidth = winWidth - this.screenHeight * screenRatio
         }
         else {
-           blackWidth = winWidth - winHeight * screenRatio
+          blackWidth = winWidth - winHeight * screenRatio
         }
         this.mouseAbsPos[0] -= blackWidth / 2
         if (this.mouseAbsPos[0] < 0) {
@@ -204,13 +204,17 @@ new Vue({
       this.mouseMoveSlice[1] += evt.movementY;
     },
     onScreenMouseDown(evt) {
+      evt.preventDefault();
       // if (!this.isPointorLocked) {
       //   if (evt.button === 0) {
       //     this.setPointerLock(true);
       //   }
       //   return;
       // }
-      evt.preventDefault();
+      if (!this.isKeyCaptureActive) {
+        this.setScreenFocus(true);
+        return;
+      }
       mouse.sendEvent(this.$channel, evt.button, 'mousedown');
     },
     onScreenMouseUp(evt) {
