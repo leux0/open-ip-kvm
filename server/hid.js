@@ -43,12 +43,40 @@ class HIDController {
         this.mouse_data = [0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
         this.mouse_x = 0;
         this.mouse_y = 0;
+        this.connected = true;
+    }
+
+    Reconect() {
+        try {
+            this.device.close();
+            this.connected = false;
+        } catch (e) {
+            console.warn("Error closing device");
+        }
+        try {
+            this.device = new HID.HID(VENDOR_ID, PRODUCT_ID);
+            console.log("Reconnected device: ", VENDOR_ID, PRODUCT_ID);
+            this.connected = true;
+        } catch (e) {
+            console.warn("Error reconnecting device, Retrying in 1 second.");
+            setTimeout(this.Reconect.bind(this), 1000);
+        }
     }
 
     WriteHID(data) {
         // add 0x00 to the beginning of the data
         // console.debug("Write data: ", data);
-        this.device.write([0x00].concat(data));
+        if (!this.connected) {
+            return;
+        }
+        try {
+            this.device.write([0x00].concat(data));
+        }
+        catch (e) {
+            this.connected = false;
+            console.warn("Error writing to device, Reconnecting.");
+            this.Reconect();
+        }
     }
 
     WriteWS2812(r, g, b) {
