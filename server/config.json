@@ -3,8 +3,9 @@
   "listen_port": 80,
   "video": {
     "device": "/dev/video0",
-    "res": "1920x1080",
+    "res": "1280x720",
     "fps": 60,
+    "format": "auto",
     "stream_port": 10120,
     "backend": "ustreamer"
   }

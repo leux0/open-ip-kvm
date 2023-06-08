@@ -20,10 +20,13 @@ function startVideo(opt) {
     } else if (opt.backend === 'ustreamer') {
       var cmd = [
         'ustreamer',
-        `--device=${opt.device} -r ${opt.res} -f ${opt.fps} --format mjpeg`,
+        `--device=${opt.device} -r ${opt.res} -f ${opt.fps}`, //  --format mjpeg
         `--host=0.0.0.0 --port=${opt.stream_port} --allow-origin=\\*`,
         '--workers=3 --drop-same-frames=30'
       ].join(' ');
+      if (opt.format !== 'auto') {
+        cmd += ` --format ${opt.format}`;
+      }
       var proc_name = 'ustreamer';
     } else {
       reject(new Error(`Unknown backend ${opt.backend}, only mjpg_streamer and ustreamer are supported`));
