@@ -18,6 +18,8 @@ new Vue({
     pasteContent: '',
     screenWidth: 0,
     screenHeight: 0,
+    keyAltPressed: false,
+    keyCtrlPressed: false,
   },
   mounted() {
     this.init();
@@ -66,6 +68,12 @@ new Vue({
     },
     bindKeyHandler() {
       document.addEventListener('keydown', (evt) => {
+        if (evt.key === 'Control') {
+          this.keyCtrlPressed = true;
+        }
+        if (evt.key === 'Alt') {
+          this.keyAltPressed = true;
+        }
         if (!this.isKeyCaptureActive) {
           if (evt.key === 'Enter' && !this.activeDialog) {
             this.setScreenFocus(true);
@@ -87,6 +95,12 @@ new Vue({
       });
 
       document.addEventListener('keyup', (evt) => {
+        if (evt.key === 'Control') {
+          this.keyCtrlPressed = false;
+        }
+        if (evt.key === 'Alt') {
+          this.keyAltPressed = false;
+        }
         if (!this.isKeyCaptureActive) {
           return;
         }
@@ -152,9 +166,6 @@ new Vue({
       // get window size
       const winWidth = window.innerWidth;
       const winHeight = window.innerHeight;
-      // screen ratio is according to config
-      // so we need to convert mouse position to screen ratio
-      // remove black border
       // notice: screen is in the top of window
       const screenRatio = this.screenWidth / this.screenHeight;
       const winRatio = winWidth / winHeight;
@@ -205,29 +216,23 @@ new Vue({
     },
     onScreenMouseDown(evt) {
       evt.preventDefault();
-      // if (!this.isPointorLocked) {
-      //   if (evt.button === 0) {
-      //     this.setPointerLock(true);
-      //   }
-      //   return;
-      // }
       if (!this.isKeyCaptureActive) {
         this.setScreenFocus(true);
+        return;
+      }
+      if (!this.isPointorLocked && this.keyCtrlPressed && this.keyAltPressed) {
+        if (evt.button === 0) {
+          this.setPointerLock(true);
+        }
         return;
       }
       mouse.sendEvent(this.$channel, evt.button, 'mousedown');
     },
     onScreenMouseUp(evt) {
-      // if (!this.isPointorLocked) {
-      //   return;
-      // }
       evt.preventDefault();
       mouse.sendEvent(this.$channel, evt.button, 'mouseup');
     },
     onScreenMouseWheel(evt) {
-      // if (!this.isPointorLocked) {
-      //   return;
-      // }
       evt.preventDefault();
       mouse.sendEvent(this.$channel, evt.wheelDeltaY, 'wheel');
     },

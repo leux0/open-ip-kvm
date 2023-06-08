@@ -42,12 +42,12 @@
 
         <div class="float-zone trans-bg">
           <!-- <div>Open IP-KVM</div> -->
-          <!-- <span
+          <span
             class="indicator bi-mouse"
             style="font-size: 22px"
-            :class="{active: isKeyCaptureActive}"
+            :class="{active: isPointorLocked}"
             title="Mouse Indicator"
-          ></span> -->
+          ></span>
           <span
             class="indicator bi-keyboard"
             style="font-size: 26px"
@@ -73,6 +73,7 @@
               Mouse
               <ul>
                 <li>Click anywhere to use mouse</li>
+                <li>Hold <b>Ctrl + Alt</b> and <b>click</b> to hide cursor</li>
               </ul>
             </li>
             <li>
