@@ -4,7 +4,7 @@
   "mjpg_streamer": {
     "device": "/dev/video0",
     "res": "1920x1080",
-    "fps": 30,
+    "fps": 20,
     "stream_port": 10120
   }
 }
