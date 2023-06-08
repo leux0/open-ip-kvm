@@ -20,6 +20,7 @@ new Vue({
     screenHeight: 0,
     keyAltPressed: false,
     keyCtrlPressed: false,
+    toolbarVisible: true,
   },
   mounted() {
     this.init();
@@ -138,15 +139,28 @@ new Vue({
         this.setPointerLock(false);
       }
       kb.sendEvent(this.$channel, '', 'reset');
+      this.toolbarVisible = true;
     },
     onScreenFocus() {
       this.setDialog();
       this.isKeyCaptureActive = true;
       kb.sendEvent(this.$channel, '', 'reset');
+      setTimeout(() => {
+        if (this.isKeyCaptureActive) {
+          this.toolbarVisible = false;
+        }
+      }, 2000);
     },
     setScreenFocus(bool) {
       const screen = document.querySelector('.screen');
       screen[bool ? 'focus' : 'blur']();
+      // if (bool) {
+      //   setTimeout(() => {
+      //     this.toolbarVisible = false;
+      //   }, 1000);
+      // }else{
+      //   this.toolbarVisible = true;
+      // }
     },
     setPointerLock(bool) {
       const screen = document.querySelector('.screen');
