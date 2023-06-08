@@ -160,6 +160,9 @@ new Vue({
       }
     },
     onScreenMouseMove(evt) {
+      if (!this.isKeyCaptureActive) {
+        return;
+      }
       // get absolute position
       this.mouseAbsPos[0] = evt.clientX;
       this.mouseAbsPos[1] = evt.clientY;
@@ -215,11 +218,11 @@ new Vue({
       this.mouseMoveSlice[1] += evt.movementY;
     },
     onScreenMouseDown(evt) {
-      evt.preventDefault();
       if (!this.isKeyCaptureActive) {
         this.setScreenFocus(true);
         return;
       }
+      evt.preventDefault();
       if (!this.isPointorLocked && this.keyCtrlPressed && this.keyAltPressed) {
         if (evt.button === 0) {
           this.setPointerLock(true);
@@ -229,10 +232,16 @@ new Vue({
       mouse.sendEvent(this.$channel, evt.button, 'mousedown');
     },
     onScreenMouseUp(evt) {
+      if (!this.isKeyCaptureActive) {
+        return;
+      }
       evt.preventDefault();
       mouse.sendEvent(this.$channel, evt.button, 'mouseup');
     },
     onScreenMouseWheel(evt) {
+      if (!this.isKeyCaptureActive) {
+        return;
+      }
       evt.preventDefault();
       mouse.sendEvent(this.$channel, evt.wheelDeltaY, 'wheel');
     },
