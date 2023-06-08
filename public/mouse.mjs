@@ -24,7 +24,14 @@ export function sendEvent(channel, data, type) {
       case 2:
         payload[0] = 2;
         break;
+      case 3:
+        payload[0] = 8;
+        break;
+      case 4:
+        payload[0] = 16;
+        break;
       default:
+        console.warn('Unknown mouse button', data);
         return;
     }
     last_mouse_down_time = Date.now();
@@ -40,6 +47,12 @@ export function sendEvent(channel, data, type) {
         break;
       case 2:
         payload[0] = 2;
+        break;
+      case 3:
+        payload[0] = 8;
+        break;
+      case 4:
+        payload[0] = 16;
         break;
       default:
         return;
