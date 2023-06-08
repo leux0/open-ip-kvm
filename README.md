@@ -57,14 +57,9 @@ The unit plugs into the Keyboard, Video and Mouse ports of a computer or server 
   * Recommendation: `Phicomm N1`, [Raspberry Pi 4](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/) or other models,
   * Recent linux kernel
   * 2+ USB ports
-* Arduino Leonardo [link](https://docs.arduino.cc/hardware/leonardo)
+* ~~Arduino Leonardo [link](https://docs.arduino.cc/hardware/leonardo)~~
+* Mini-KVM-Card
   * Emulate HID (mouse and keyboard)
-* Optional
-  * USB-to-TTL Adapter
-    * If linux sbc has no built-in serial port
-    * Recommendation: `PL2303HX`
-  * USB Wi-Fi Adapter
-    * If linux sbc has no built-in Wi-Fi
 
 
 ## Deploy and Run
