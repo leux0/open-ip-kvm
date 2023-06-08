@@ -100,8 +100,11 @@ SSH to linux SBC with your pc.
 
 <summary>Deploy App and Dependency on Linux SBC</summary>
 
-* Build and install [MJPG-Streamer](https://github.com/jacksonliam/mjpg-streamer)
-  * [How to build MJPG-Streamer](https://www.acmesystems.it/video_streaming)
+* Select and install one video backend (Highly recommend `µStreamer')
+  * Install [µStreamer](https://github.com/pikvm/ustreamer)
+    * See the github page for installation instructions
+  * Build and install [MJPG-Streamer](https://github.com/jacksonliam/mjpg-streamer)
+    * [How to build MJPG-Streamer](https://www.acmesystems.it/video_streaming)
 * Install Node.js 14.x+
   * [Install NodeJS on Armbian](https://www.autoptr.top/htmls/i12bretro/0507)
 * Clone repo and install its dependency
@@ -118,9 +121,10 @@ SSH to linux SBC with your pc.
   * ~~Arduino Leonardo via native serial port or USB-TTL adapter~~
   * Connect Mini-KVM-Card to SBC via USB
 * Edit `open-ip-kvm/server/config.json`
-  * `mjpg_streamer.device`: path of HDMI-USB capture device
-  * ~~`serialport`: path of serial port~~
-  * HID specification code already configured, no need to change
+  * `video.device`: path of HDMI-USB capture device
+  * `video.backend`: installed backend of video stream, `mjpg-streamer` or `ustreamer`
+  * `video.res/fps`: depends on your capture device
+  * ~~`serialport`: path of serial port~~ HID specification code already configured, no need to change
 
 </details>
 
