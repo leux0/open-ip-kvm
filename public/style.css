@@ -41,7 +41,7 @@ body, html {
   text-align: center;
   min-width: 100px;
   position: fixed;
-  left: calc(50vw - 100px);
+  left: calc(50vw - 78px);
   top: 12px;
 
   padding: 4px 8px;
