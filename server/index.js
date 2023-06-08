@@ -4,21 +4,21 @@ const url = require('url');
 const config = require("./config.json");
 
 config.app_title = config.app_title || 'Open IP-KVM';
-config.mjpg_streamer.stream_port = config.mjpg_streamer.stream_port || 8010;
+config.video.stream_port = config.video.stream_port || 8010;
 
 const ws = require('ws');
 const Koa = require('koa');
 const KoaStaic = require('koa-static');
 
 const { HIDController } = require('./hid.js');
-const { startMJPGStreamer } = require('./mjpg-streamer.js');
+const { startVideo } = require('./video.js');
 
 
 async function start() {
 
   try {
     var hid = new HIDController()
-    await startMJPGStreamer(config.mjpg_streamer);
+    await startVideo(config.video);
     function websocketHandler(ws) {
       console.log('new websocket connection');
       ws.on('message', function message(data) {

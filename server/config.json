@@ -1,10 +1,11 @@
 {
   "app_title": "Open IP-KVM",
   "listen_port": 80,
-  "mjpg_streamer": {
+  "video": {
     "device": "/dev/video0",
     "res": "1920x1080",
     "fps": 60,
-    "stream_port": 10120
+    "stream_port": 10120,
+    "backend": "ustreamer"
   }
 }

@@ -28,7 +28,7 @@ new Vue({
         const config = await this.fetchConfig();
         document.title = config.app_title;
 
-        const streamOk = await this.pingStream(config.mjpg_streamer.stream_port);
+        const streamOk = await this.pingStream(config.video.stream_port);
         if (!streamOk) {
           throw new Error(
             'Video stream is not ready, please check mjpeg process'
@@ -40,8 +40,8 @@ new Vue({
         this.bindKeyHandler();
         this.bindMouseHandler();
 
-        this.streamSrc = `http://${this.serviceHost}:${config.mjpg_streamer.stream_port}/?action=stream`;
-        const res = config.mjpg_streamer.res // string like '1280x720'
+        this.streamSrc = `http://${this.serviceHost}:${config.video.stream_port}/?action=stream`;
+        const res = config.video.res // string like '1280x720'
         this.screenWidth = parseInt(res.split('x')[0])
         this.screenHeight = parseInt(res.split('x')[1])
       } catch (e) {

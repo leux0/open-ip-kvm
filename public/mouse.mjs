@@ -1,3 +1,5 @@
+var last_mouse_down_time = 0;
+// if up and down are too close, delay the up event 50ms
 export function sendEvent(channel, data, type) {
   let payload = new Array(2);
   payload.fill(0);
@@ -9,7 +11,7 @@ export function sendEvent(channel, data, type) {
     var type_msg = 'write_mouse_pos'
     payload[0] = data[0];
     payload[1] = data[1];
-  }else if (type === 'mousedown') {
+  } else if (type === 'mousedown') {
     var type_msg = 'write_mouse_button'
     payload[1] = 2;
     switch (data) {
@@ -25,6 +27,7 @@ export function sendEvent(channel, data, type) {
       default:
         return;
     }
+    last_mouse_down_time = Date.now();
   } else if (type === 'mouseup') {
     var type_msg = 'write_mouse_button'
     payload[1] = 3;
@@ -41,10 +44,10 @@ export function sendEvent(channel, data, type) {
       default:
         return;
     }
-  } else if(type === 'wheel') {
+  } else if (type === 'wheel') {
     var type_msg = 'write_mouse_wheel'
     payload[0] = Math.round(data / 40);
-  } else if(type === 'reset') {
+  } else if (type === 'reset') {
     var type_msg = 'write_mouse_button'
     payload[1] = 1;
   } else {
@@ -55,7 +58,13 @@ export function sendEvent(channel, data, type) {
     type: type_msg,
     payload,
   };
-
-  channel.send(JSON.stringify(msg));
+  if (type === 'mouseup' && Date.now() - last_mouse_down_time < 50) {
+    setTimeout(function () {
+      channel.send(JSON.stringify(msg));
+    }, 50);
+    console.debug('sendEvent mouse delayed', channel, data, type);
+  } else {
+    channel.send(JSON.stringify(msg));
+  }
   // console.debug('sendEvent mouse', channel, data, type);
 }
