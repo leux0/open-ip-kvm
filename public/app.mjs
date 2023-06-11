@@ -33,9 +33,7 @@ new Vue({
 
         const streamOk = await this.pingStream(config.video.stream_port);
         if (!streamOk) {
-          throw new Error(
-            'Video stream is not ready, please check mjpeg process'
-          );
+          alert('Video stream seems not ready, check mjpeg process');
         }
         this.$channel = await ws.init(
           `ws://${this.serviceHost}:${config.listen_port}/websocket`
