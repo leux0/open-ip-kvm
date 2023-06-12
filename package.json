@@ -4,7 +4,7 @@
   "description": "Build your own open-source ip-kvm device",
   "main": "index.js",
   "scripts": {
-    "start": "node server/index.js"
+    "start": "sudo node server/index.js"
   },
   "author": "Nihiue",
   "license": "MIT",
