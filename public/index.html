@@ -17,12 +17,16 @@
 
   <body>
     <script>
-      document.addEventListener('contextmenu',function(e){
-        e.preventDefault();
-      })
-      document.body.style.overflow='hidden';
-      document.addEventListener("touchmove",mo,false);//禁止页面滑动
-      document.addEventListener("scroll",mo,false);//禁止页面滑动
+    document.body.style.overflow='hidden';
+    document.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    })
+    document.addEventListener("touchmove", function (e) {
+      e.preventDefault();
+    });
+    document.addEventListener("scroll", function (e) {
+      e.preventDefault();
+    });
     </script>
     <div id="app">
       <div v-show="streamSrc" style="display: none">
