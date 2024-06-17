@@ -4,15 +4,13 @@
   "description": "Build your own open-source ip-kvm device",
   "main": "index.js",
   "scripts": {
-    "start": "sudo node server/index.js"
+    "start": "node server/index.js"
   },
   "author": "Nihiue",
   "license": "MIT",
   "dependencies": {
     "koa": "^2.13.4",
     "koa-static": "^5.0.0",
-    "node-hid": "^2.1.2",
-    "serialport": "^10.4.0",
     "ws": "^8.10.0"
   }
 }

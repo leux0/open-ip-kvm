@@ -1,152 +1,93 @@
-# About this fork
-This repo is modified from [Nihiue/open-ip-kvm](https://github.com/Nihiue/open-ip-kvm) to adopt to [Jackadminx/KVM-Card-Mini](https://github.com/Jackadminx/KVM-Card-Mini) hardware HID protocol.
+# 关于项目
+
+本项目最初为 [Nihiue/open-ip-kvm](https://github.com/Nihiue/open-ip-kvm) 创建，由 [ElluIFX/open-ip-kvm](https://github.com/ElluIFX/open-ip-kvm) 添加HID支持。
+
+删除了所有 arduino串口代码 和 Node-HID 因此它与原始 arduino硬件 不兼容。
+
+本项目为在RK3588 OPENWRT上运行为目的，因为在OPENWRT MUSL上安装Node-HID需要编译安装，会缺少依赖导致安装失败所以去除了它。
+
+通过RK3588的HDMI IN来采集HIDMI输入，通过USB OTG Gadget来实现键盘鼠标输入。
 
 
-All serial and arduino code are removed, use [Node-HID](https://github.com/node-hid/node-hid) to communicate with KVM-Card-Mini, so **it's not compatible with original arduino hardware**.
+## 项目功能
 
-I know that my front-end code is so suck, just for fun.
+[原项目演示视频](https://www.bilibili.com/video/BV1c841177hF/)
 
-**Node-HID requires root permission to run**
-
-# Open IP-KVM
-
-This project provides an open-source IP-KVM solution.
-
-Related article:
-
-[DIY 一个运维神器 Open IP-KVM](https://zhuanlan.zhihu.com/p/578602475)
-
-[English Version By Google Translate](https://zhuanlan-zhihu-com.translate.goog/p/578602475?_x_tr_sl=zh-CN&_x_tr_tl=en)
-
-## What is IP-KVM
-
-KVM Over IP (IP-KVM) is a hardware based solution for remote access to your computer or server.
-
-The unit plugs into the Keyboard, Video and Mouse ports of a computer or server and transmits those to a connected user through a network.
-
-<!-- ![kvm](https://user-images.githubusercontent.com/5763301/198827953-2509f245-0274-4556-9f3e-969b4b33a728.png) -->
-
-### IP-KVM vs RD software(VNC/RDP/TeamViewer)
-
-* RD software requires a working OS, and must be pre-configured. It often fails in an emergency situation
-* IP-KVM is out-of-band, so it can be used to install OS, setup BIOS or fix low-level issues
-
-## Features
-
-[Demo Video](https://www.bilibili.com/video/BV1c841177hF/)
-
-* Web browser as client
-* 1080P 30fps video stream
-* Full mouse & keyboard support
-* UI Indicator
-* Remote Paste: Input ASCII sequence
+* Web浏览器作为客户端
+* 1080P 30fps 视频流
+* 支持鼠标和键盘
+* UI显示
+* 远程粘贴：仅限 ASCII 字符
 
 ![screenshot](https://user-images.githubusercontent.com/5763301/198885015-f1cd83d7-6717-410c-8837-68b347f4b29c.png)
 
-## System Diagram
-
 ![diagram](https://user-images.githubusercontent.com/5763301/198833599-87af1bec-92c7-4c87-80cf-8658b842cff5.jpg)
 
-## Hardware Requirements
 
-* HDMI-USB capture device
-  * Recommendation: `MS2109` based devices [link](http://en.macrosilicon.com/info.asp?base_id=2&third_id=50)
-  * Input: Up to 4K 30FPS
-  * Output: Up to 1080P 30FPS @ MJPEG
-* Linux single-board computer
-  * Recommendation: `Phicomm N1`, [Raspberry Pi 4](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/) or other models,
-  * Recent linux kernel
-  * 2+ USB ports
-* ~~Arduino Leonardo [link](https://docs.arduino.cc/hardware/leonardo)~~
-* Mini-KVM-Card
-  * Emulate HID (mouse and keyboard)
+## 部署和运行
 
+### 1. 配置文件
 
-## Deploy and Run
-
-### ~~1. Prepare Arduino Leonardo~~ (see note on top)
-
-<details>
-
-<summary>Upload program</summary>
-
-1. Download and install [Arduino IDE](https://www.arduino.cc/en/software/) on your PC.
-2. Connect leonardo to PC via USB
-3. Download arduino code file [virt-hid-arduino.ino](https://raw.githubusercontent.com/Nihiue/open-ip-kvm/main/virt-hid-arduino/virt-hid-arduino.ino), Open it with Arduino IDE, then click `Sketch/Upload (Ctrl + U)`
-4. Disconnect leonardo USB
-
-</details>
-
-<details>
-
-<summary>Reference: How to connect serial port</summary>
-
-![image](https://user-images.githubusercontent.com/5763301/198872791-cbac6e09-562a-43ae-82fb-a5533461d36b.png)
-
-![serial](https://user-images.githubusercontent.com/5763301/198873347-8bade4fc-e682-4f46-a115-ec6dc4e09d22.jpg)
-
-</details>
-
-### 2. Prepare Linux SBC
-
-SSH to linux SBC with your pc.
-
-<details>
-
-<summary>Deploy App and Dependency on Linux SBC</summary>
-
-* Select and install one video backend (Highly recommend `µStreamer')
-  * Install [µStreamer](https://github.com/pikvm/ustreamer)
-    * See the github page for installation instructions
-  * Build and install [MJPG-Streamer](https://github.com/jacksonliam/mjpg-streamer)
-    * [How to build MJPG-Streamer](https://www.acmesystems.it/video_streaming)
-* Install Node.js 14.x+
-  * [Install NodeJS on Armbian](https://www.autoptr.top/htmls/i12bretro/0507)
-* Clone repo and install its dependency
-  * `git clone https://github.com/ElluIFX/open-ip-kvm.git`
-  * `cd open-ip-kvm && npm install`
-</details>
-
-<details>
-
-<summary>Connect IO and edit config</summary>
-
-* Connect IO
-  * HDMI-USB capture device via USB
-  * ~~Arduino Leonardo via native serial port or USB-TTL adapter~~
-  * Connect Mini-KVM-Card to SBC via USB
-* Edit `open-ip-kvm/server/config.json`
-  * `video.device`: path of HDMI-USB capture device
-  * `video.backend`: installed backend of video stream, `mjpg-streamer` or `ustreamer`
-  * `video.res/fps`: depends on your capture device
-  * ~~`serialport`: path of serial port~~ HID specification code already configured, no need to change
-
-</details>
+* 编辑 `open-ip-kvm/server/config.json`
+  * `keyboard_port`: Gadget模拟的HID键盘设备节点路径
+  * `mouse_port`: Gadget模拟的HID鼠标设备节点路径
+  * `listen_port`: WEB界面端口
+  * `video.device`: HDMI采集设备节点的路径
+  * `video.res/fps`: 取决于您的采集设备
+  * `video.stream_port`: 推流的端口
+  * `video.backend`: 视频推流的后端程序, `mjpg-streamer` 或 `ustreamer`
 
 
-### 3. Run
+### 2. 模拟键鼠
 
-1. Connect HDMI output of target computer to HDMI-USB capture device
-2. Connect target computer to leonardo via USB
-3. Run `cd open-ip-kvm && npm run start` on linux SBC
-4. Turn on target computer
-5. Open `http://[IP of Linux SBC]:8000` in web browser
+* 1. 修改内核源码，通过加载内核模块来使用Gadget模拟HID键鼠
+  * 根据 `gadget/hid.patch` 修改 `linux/drivers/usb/gadget/legacy/hid.c` 来添加键鼠
+  * 然后在编译内核
+  * 最后将生成的 `linux/drivers/usb/gadget/legacy/g_hid.ko` 拷贝到RK3588上加载
 
-How to control
+* 2. 也可以自行使用脚本通过 `configfs` 来使用Gadget模拟HID键鼠
+  * 参考本项目提供的HID键鼠描述符和上报格式修改，如无意外可见 `/dev/hidg*` 设备节点
+  * 一定要用本项目提供的HID键鼠描述符，否则需要自行修改 `server/hid.js` 来适配
 
-* Mouse
-  * Click anywhere to enter `pointer capture` mode
-  * Press `ESC` to exit
-* Keyboard
-  * Press `Enter` to enter `key capture` mode
-  * press `Shift + ESC` to exit
+* 3. HID键盘鼠标描述符和上报格式参考教程
+  * [HID键盘的学习](https://leux.cc/doc/HID%E9%94%AE%E7%9B%98%E7%9A%84%E5%AD%A6%E4%B9%A0.html)
+  * [HID鼠标的学习](https://leux.cc/doc/HID%E9%BC%A0%E6%A0%87%E7%9A%84%E5%AD%A6%E4%B9%A0.html)
 
-## License
 
-MIT
+### 3. 运行项目
 
-## Credits
+1. 在OPENWRT上安装NODE：`opkg update && opkg install node-npm`
+2. 将目标设备的 HDMI输出口 连接到RK3588的 HDMI-IN接口
+3. 通过USB将目标设备与RK3588的USB OTG口相连
+4. 然后 `加载添加了键鼠的 g_hid.ko` 或 `脚本` 来使用Gadget模拟HID键鼠（/dev/hidg*）
+5. 首次运行需要先安装依赖 `cd open-ip-kvm && npm install`
+6. 再运行 `cd open-ip-kvm && npm run start` 来运行项目
+7. 现在可在PC上WEB浏览器中打开RK3588的地址来访问，例如：http://[IP of RK3588]:8000
+
+
+### 4. 注意事项
+
+1. 需要使用支持RK3588的NV24编码的 [ustreamer](https://github.com/Vincent056/ustreamer/tree/rk3588-b) ，pikvm官方的不支持
+2. 上面的ustreamer编译后添加到 `$PATH` 即可，该程序运行需要root权限
+3. 由于本项目目标是在OPENWRT上运行，所以去除了sudo命令。其他系统上可能需要在root用户下运行
+4. 本人完全不会JS，只是在网络上边搜边学，所以可能有大量问题需要各位修复
+
+
+### 5. 如何控制
+
+* 鼠标
+  * 先单击 `网页任意位置` 来进入鼠标捕获模式
+  * 再按下`Ctrl + Alt`并点击`网页任意位置`来使用鼠标
+* 键盘
+  * 按下 `Enter` 进入按键捕获模式
+  * 按下 `Shift + ESC` 退出按键捕获模式
+
+
+## 特别鸣谢
+
+[Pi-KVM](https://pikvm.org/)
+
+[ustreamer](https://github.com/Vincent056/ustreamer/tree/rk3588-b)
 
 [mjpg_streamer](https://github.com/jacksonliam/mjpg-streamer)
 
-For production environment, use [Pi-KVM](https://pikvm.org/)

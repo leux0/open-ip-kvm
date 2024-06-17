@@ -32,12 +32,12 @@ function startVideo(opt) {
       reject(new Error(`Unknown backend ${opt.backend}, only mjpg_streamer and ustreamer are supported`));
     }
     // check if process is running
-    const ps = spawn(`sudo pidof ${proc_name} && sleep 1`, { shell: true });
+    const ps = spawn(`pidof ${proc_name} && sleep 1`, { shell: true });
     ps.stdout.on('data', (data) => {
       console.log(`stdout: ${data}`);
       if (data.toString('utf-8').length > 0) {
         console.log(`${proc_name} is already running, pid: ${data.toString('utf-8')}, kill it`);
-        spawn(`sudo kill ${data.toString('utf-8')}`, { shell: true });
+        spawn(`kill ${data.toString('utf-8')}`, { shell: true });
       }
     });
     // wait ps to exit

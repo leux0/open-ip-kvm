@@ -24,35 +24,39 @@ async function start() {
       ws.on('message', function message(data) {
         const msg = JSON.parse(data.toString());
         switch (msg.type) {
-          case 'write_WS2812':
-            var r = msg.payload[0];
-            var g = msg.payload[1];
-            var b = msg.payload[2];
-            hid.WriteWS2812(r, g, b);
-            break;
-          case 'write_keyboard':
+          //case 'write_WS2812':
+            //var r = msg.payload[0];
+            //var g = msg.payload[1];
+            //var b = msg.payload[2];
+            //hid.WriteWS2812(r, g, b);
+            //break;
+          case 'write_keyboard':				// 键盘数据
             var key = msg.payload[0];
             var state = msg.payload[1];
             hid.WriteKeyboard(key, state);
             break;
-          case 'write_mouse_pos':
+          /*case 'write_mouse_pos':				// 鼠标绝对位置
             var x = msg.payload[0];
             var y = msg.payload[1];
-            hid.WriteMousePos(x, y);
-            break;
-          case 'write_mouse_button':
+            //hid.WriteMousePos(x, y);
+            console.log('位置：', x, y);
+            break;*/
+          case 'write_mouse_button':			// 鼠标按键
             var button = msg.payload[0];
             var state = msg.payload[1];
             hid.WriteMouseButtons(button, state);
+            //console.log('按键：', button, state);
             break;
-          case 'write_mouse_wheel':
+          case 'write_mouse_wheel':				// 鼠标滚轮
             var wheel = msg.payload[0];
             hid.WriteMouseWheel(wheel);
+            //console.log('滚轮：', wheel);
             break;
-          case 'write_mouse_offset':
+          case 'write_mouse_offset':			// 鼠标相对位置
             var x = msg.payload[0];
             var y = msg.payload[1];
             hid.WriteMouseOffset(x, y);
+            //console.log('偏移：', x, y);
             break;
         }
       });

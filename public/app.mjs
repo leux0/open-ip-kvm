@@ -53,7 +53,7 @@ new Vue({
     },
     async pingStream(port) {
       try {
-        const pingRes = await fetch(`http://${this.serviceHost}:${port}/?action=snapshot`);
+        const pingRes = await fetch(this.streamSrc);
         return pingRes.status === 200;
       } catch (e) {
         return false;
