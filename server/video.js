@@ -42,7 +42,7 @@ function startVideo(opt) {
     });
     // wait ps to exit
     ps.on('close', (code) => {
-      shell = spawn('bash', ['-c', cmd]);
+      shell = spawn('sh', ['-c', cmd]);
 
       shell.stdout.on('data', (data) => {
         console.log(data.toString('utf-8'));
